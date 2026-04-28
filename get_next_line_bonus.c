@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: fliraud- <fliraud-@student.42barcelona.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/04/26 12:44:01 by fliraud-          #+#    #+#             */
-/*   Updated: 2026/04/27 16:02:07 by fliraud-         ###   ########.fr       */
+/*   Updated: 2026/04/27 16:02:00 by fliraud-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 static char	*read_file_cat(int fd, char **remaining)
 {
@@ -111,22 +111,22 @@ static char	*ft_split_lines(char **remaining, int i)
 char	*get_next_line(int fd)
 {
 	char		*buffer;
-	static char	*remaining;
+	static char	*remaining[FD_MAX];
 	char		*remaining2;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || BUFFER_SIZE <= 0 || fd >= FD_MAX)
 		return (NULL);
-	while (!ft_strchr(remaining, '\n'))
+	while (!ft_strchr(remaining[fd], '\n'))
 	{
-		buffer = read_file_cat(fd, &remaining);
+		buffer = read_file_cat(fd, &remaining[fd]);
 		if (!buffer)
 			break ;
-		remaining2 = remaining;
-		remaining = ft_strjoin(remaining2, buffer);
+		remaining2 = remaining[fd];
+		remaining[fd] = ft_strjoin(remaining2, buffer);
 		free(remaining2);
 		free(buffer);
-		if (!remaining)
+		if (!remaining[fd])
 			return (NULL);
 	}
-	return (ft_split_lines(&remaining, 0));
+	return (ft_split_lines(&remaining[fd], 0));
 }
